@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Avesh raj singh - Backend Developer | Node.js Enthusiast | MongoDB Craftsman">
+    <meta name="keywords" content="backend developer, node.js, mongodb, javascript, portfolio">
+    <meta name="author" content="Avesh raj singh">
+    <meta property="og:title" content="Avesh raj singh - Backend Developer Portfolio">
+    <meta property="og:description" content="Passionate backend developer specializing in Node.js, MongoDB, and RESTful APIs">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aveshrajsingh.github.io/portfolio">
+    <meta property="og:image" content="./rishuProfile.jpg">
+    <title>Avesh raj singh - Backend Developer</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ScrollReveal -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .typing-effect {
+            border-right: 2px solid #3b82f6;
+            animation: blink-caret 1s infinite;
+        }
+        
+        @keyframes blink-caret {
+            0%, 50% { border-color: #3b82f6; }
+            51%, 100% { border-color: transparent; }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .skill-tag {
+            background: linear-gradient(45deg, #3b82f6, #1e40af);
+            transition: transform 0.2s ease;
+        }
+        
+        .skill-tag:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .hero-pattern {
+            background-image: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transform-origin: left;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white overflow-x-hidden">
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-gray-900/90 backdrop-blur-md z-50 border-b border-gray-800">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    Avesh raj singh
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link hover:text-blue-400">Home</a>
+                    <a href="#about" class="nav-link hover:text-blue-400">About</a>
+                    <a href="#skills" class="nav-link hover:text-blue-400">Skills</a>
+                    <a href="#projects" class="nav-link hover:text-blue-400">Projects</a>
+                    <a href="#contact" class="nav-link hover:text-blue-400">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" class="text-white hover:text-blue-400">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-gray-800 border-t border-gray-700">
+            <div class="container mx-auto px-6 py-4 space-y-4">
+                <a href="#home" class="block hover:text-blue-400">Home</a>
+                <a href="#about" class="block hover:text-blue-400">About</a>
+                <a href="#skills" class="block hover:text-blue-400">Skills</a>
+                <a href="#projects" class="block hover:text-blue-400">Projects</a>
+                <a href="#contact" class="block hover:text-blue-400">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center hero-pattern">
+        <div class="container mx-auto px-6 text-center">
+            <div class="max-w-4xl mx-auto">
+                <img src="./rishuProfile.jpg" alt="Avesh raj singh" class="w-32 h-32 rounded-full mx-auto mb-8 border-4 border-blue-400 shadow-xl" loading="lazy">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    Hi, I'm Avesh raj singh
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-gray-300">
+                    <span id="typewriter" class="typing-effect">Backend Developer | Node.js Enthusiast | MongoDB Craftsman</span>
+                </p>
+                <p class="text-lg mb-12 text-gray-400 max-w-2xl mx-auto">
+                    📍 Based in India | Building scalable backend solutions
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#projects" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105">
+                        View My Work
+                    </a>
+                    <a href="./resume.pdf" download class="border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white px-8 py-3 rounded-full transition-all duration-300">
+                        <i class="fas fa-download mr-2"></i>Download Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fas fa-chevron-down text-blue-400 text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    About Me
+                </h2>
+                <div class="bg-gray-900 rounded-2xl p-8 shadow-xl">
+                    <p class="text-lg leading-relaxed text-gray-300">
+                        Passionate backend developer with a focus on building scalable and secure systems. I specialize in Node.js, MongoDB, and RESTful APIs. Constantly exploring how to architect real-world platforms — from user auth to cloud integration. Currently diving deeper into advanced backend dev and system design.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    Tech Stack
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Languages -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-code text-blue-400 mr-3"></i>Languages
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">JavaScript</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">TypeScript</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">C++</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Backend -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-server text-green-400 mr-3"></i>Backend
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Node.js</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Express.js</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Database -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-database text-yellow-400 mr-3"></i>Database
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">MongoDB</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Mongoose</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Authentication -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-shield-alt text-red-400 mr-3"></i>Authentication
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">JWT</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">OTP</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Session-based</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Cloud -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-cloud text-purple-400 mr-3"></i>Cloud
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Cloudinary</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">SendGrid</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">SMTP</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Tools -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-hover">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fas fa-tools text-orange-400 mr-3"></i>Tools
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Git</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Postman</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">VS Code</span>
+                            <span class="skill-tag px-3 py-1 rounded-full text-sm">Linux</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    Featured Projects
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Online Voting Platform -->
+                    <div class="bg-gray-900 rounded-xl overflow-hidden shadow-xl card-hover">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-4 text-blue-400">Online Voting Platform</h3>
+                            <p class="text-gray-300 mb-4">
+                                Secure voting system with Aadhaar-based verification, user roles, and end-to-end result handling.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-blue-600 px-2 py-1 rounded text-sm">Node.js</span>
+                                <span class="bg-green-600 px-2 py-1 rounded text-sm">MongoDB</span>
+                                <span class="bg-yellow-600 px-2 py-1 rounded text-sm">JWT</span>
+                                <span class="bg-purple-600 px-2 py-1 rounded text-sm">Gov APIs</span>
+                            </div>
+                            <div class="flex gap-4">
+                                <a href="https://github.com/AveshRajSingh/EVM" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300">
+                                    <i class="fab fa-github mr-2"></i>GitHub
+                                </a>
+                                <a href="https://evm-pied.vercel.app" target="_blank" rel="noopener noreferrer" class="text-green-400 hover:text-green-300">
+                                    <i class="fas fa-external-link-alt mr-2"></i>Live Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- skillSync -->
+                    <div class="bg-gray-900 rounded-xl overflow-hidden shadow-xl card-hover">
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-4 text-blue-400">skillSync</h3>
+                            <p class="text-gray-300 mb-4">
+                                A dynamic platform that connects learners, builders, and mentors through skill-based profiles, real-time collaboration, and intelligent team formation. Built in 24 hours for a hackathon under the theme "EdTech and Smart Campus."
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-blue-600 px-2 py-1 rounded text-sm">EdTech</span>
+                                <span class="bg-green-600 px-2 py-1 rounded text-sm">Team Formation</span>
+                                <span class="bg-yellow-600 px-2 py-1 rounded text-sm">Real-time</span>
+                                <span class="bg-purple-600 px-2 py-1 rounded text-sm">Hackathon</span>
+                            </div>
+                            <div class="flex gap-4">
+                                <a href="https://github.com/AveshRajSingh/SkillSync" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300">
+                                    <i class="fab fa-github mr-2"></i>GitHub
+                                </a>
+                                <a href="https://mionacs.github.io/SkillSync/" target="_blank" rel="noopener noreferrer" class="text-green-400 hover:text-green-300">
+                                    <i class="fas fa-external-link-alt mr-2"></i>Live Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-12 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    Get In Touch
+                </h2>
+                
+                <div class="bg-gray-800 rounded-2xl p-8 shadow-xl">
+                    <p class="text-lg text-gray-300 mb-8">
+                        Let's connect and build something amazing together!
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                        <a href="mailto:aveshrajsingh3@gmail.com" class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full transition-all duration-300 transform hover:scale-105">
+                            <i class="fas fa-envelope mr-3"></i>Email Me
+                        </a>
+                        <a href="https://github.com/AveshRajSingh" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center border border-gray-600 hover:bg-gray-700 px-6 py-3 rounded-full transition-all duration-300">
+                            <i class="fab fa-github mr-3"></i>GitHub
+                        </a>
+                        <a href="https://www.linkedin.com/in/avesh-web-dev/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center border border-gray-600 hover:bg-gray-700 px-6 py-3 rounded-full transition-all duration-300">
+                            <i class="fab fa-linkedin mr-3"></i>LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-8 border-t border-gray-700">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                © 2025 Avesh raj singh. Built with ❤️ using HTML5, Tailwind CSS, and JavaScript.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="./script.js"></script>
+</body>
+</html>
