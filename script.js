@@ -149,20 +149,108 @@ document.querySelectorAll('.skill-tag').forEach(tag => {
 
 // Add floating animation to profile image
 function addFloatingAnimation() {
-    const profileImg = document.querySelector('img[alt="Avesh raj singh"]');
+    const profileImg = document.querySelector('.profile-image');
     if (profileImg) {
-        profileImg.style.animation = 'float 3s ease-in-out infinite';
+        // Add subtle floating animation
+        profileImg.style.animation = 'profileFloat 4s ease-in-out infinite';
         
         // Add CSS animation
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes float {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-10px); }
+            @keyframes profileFloat {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                25% { transform: translateY(-5px) rotate(1deg); }
+                50% { transform: translateY(0px) rotate(0deg); }
+                75% { transform: translateY(-3px) rotate(-1deg); }
+            }
+            
+            .profile-image-container {
+                animation: containerFloat 6s ease-in-out infinite;
+            }
+            
+            @keyframes containerFloat {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.02); }
             }
         `;
         document.head.appendChild(style);
     }
+}
+
+// Add parallax effect to hero section
+function addParallaxEffect() {
+    const hero = document.getElementById('home');
+    const profileContainer = document.querySelector('.profile-image-container');
+    
+    if (hero && profileContainer) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            const opacity = 1 - scrolled / window.innerHeight;
+            
+            if (scrolled < window.innerHeight) {
+                profileContainer.style.transform = `translateY(${rate}px)`;
+                hero.style.opacity = opacity;
+            }
+        });
+    }
+}
+
+// Add animated counter for stats
+function animateCounters() {
+    const counters = document.querySelectorAll('.text-3xl.font-bold');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+                const increment = target / 50;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    
+                    const suffix = counter.textContent.replace(/[\d]/g, '');
+                    counter.textContent = Math.floor(current) + suffix;
+                }, 40);
+                
+                observer.unobserve(counter);
+            }
+        });
+    });
+    
+    counters.forEach(counter => observer.observe(counter));
+}
+
+// Animate progress bars
+function animateProgressBars() {
+    const progressBars = document.querySelectorAll('.bg-gradient-to-r');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target;
+                const width = progressBar.style.width;
+                progressBar.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressBar.style.transition = 'width 2s ease-in-out';
+                    progressBar.style.width = width;
+                }, 200);
+                
+                observer.unobserve(progressBar);
+            }
+        });
+    });
+    
+    progressBars.forEach(bar => {
+        if (bar.parentElement.classList.contains('bg-gray-700')) {
+            observer.observe(bar);
+        }
+    });
 }
 
 // Initialize all features when DOM is loaded
@@ -170,6 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
     lazyLoadImages();
     initScrollReveal();
     addFloatingAnimation();
+    addParallaxEffect();
+    animateCounters();
+    animateProgressBars();
 });
 
 // Add particle effect to hero section
