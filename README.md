@@ -1,6 +1,6 @@
 # Avesh raj singh - Portfolio Website
 
-A modern, responsive portfolio website built with HTML5, Tailwind CSS, and JavaScript. Showcasing backend development expertise with a focus on Node.js, MongoDB, and scalable system architecture.
+A modern, responsive portfolio website built with HTML5, Tailwind CSS, and JavaScript. Showcasing full stack development expertise with a focus on MERN stack, React, Node.js, and modern web technologies.
 
 ## 🚀 Features
 

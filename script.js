@@ -52,7 +52,7 @@ function typeWriter(text, element, speed = 100) {
 // Initialize typewriter effect
 window.addEventListener('load', () => {
     const typewriterElement = document.getElementById('typewriter');
-    const text = "Backend Developer | Node.js Enthusiast | MongoDB Craftsman";
+    const text = "Full Stack Developer | MERN Stack Expert | Modern Web Solutions";
     typeWriter(text, typewriterElement, 80);
 });
 
