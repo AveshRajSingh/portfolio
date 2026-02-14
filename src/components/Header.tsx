@@ -9,21 +9,36 @@ import { ArrowUpRight } from "lucide-react";
 
 export const Header = () => {
     const { scrollY } = useScroll();
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const lastScrollY = useRef(0);
 
     // Refs
     const headerRef = useRef<HTMLElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const logoRef = useRef<HTMLDivElement>(null);
-    const nameRef = useRef<HTMLSpanElement>(null); // New ref for Name
-    const subtitleRef = useRef<HTMLSpanElement>(null); // New ref for Subtitle
+    const nameRef = useRef<HTMLSpanElement>(null);
+    const subtitleRef = useRef<HTMLSpanElement>(null);
     const navRef = useRef<HTMLDivElement>(null);
     const ctaRef = useRef<HTMLDivElement>(null);
     const linksContainerRef = useRef<HTMLDivElement>(null);
     const indicatorRef = useRef<HTMLDivElement>(null);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        setIsScrolled(latest > 50);
+        const previous = lastScrollY.current;
+        const diff = latest - previous;
+        const isScrollingDown = diff > 0;
+        const isScrollingUp = diff < 0;
+
+        // Hide if scrolling down and past 50px
+        if (isScrollingDown && latest > 50) {
+            setIsVisible(false);
+        }
+        // Show if scrolling up or at the top
+        else if (isScrollingUp || latest < 50) {
+            setIsVisible(true);
+        }
+
+        lastScrollY.current = latest;
     });
 
     // GSAP Entrance Animation
@@ -31,45 +46,42 @@ export const Header = () => {
         const ctx = gsap.context(() => {
             const tl = gsap.timeline();
 
-            // 1. Navbar Container Swoosh (Background) - "first the background comes"
+            // 1. Navbar Container Swoosh (Background)
             tl.from(containerRef.current, {
-                y: -100, // Drop in from top? Or stick to previous "slide in"? User said "background comes". 
-                // Previous was xPercent: -120. Let's keep the "Swoosh" but maybe slightly faster to fit everything.
+                y: -100,
                 xPercent: -120,
                 duration: 1.2,
                 ease: "power4.out",
                 opacity: 0,
             })
 
-                // 2. Let's Talk Button - "then the let'stalk button"
+                // 2. Let's Talk Button
                 .from(ctaRef.current, {
-                    x: 50, // From Right (since it's on the right)
+                    x: 50,
                     opacity: 0,
                     duration: 0.8,
                     ease: "back.out(1.7)",
-                }, "-=0.2") // Slight overlap with background finish
+                }, "-=0.2")
 
-                // 3. Nav Links (Experience -> Project -> Skill) - "then experience then project then skill"
-                // DOM Order: Skills, Projects, Experience.
-                // Reversed Stagger (-0.1) animates Experience first, then Projects, then Skills.
+                // 3. Nav Links
                 .from(".nav-link-item", {
-                    y: -20, // Drop in looks cool, or x? 
-                    x: 20, // Slide from right
+                    y: -20,
+                    x: 20,
                     opacity: 0,
                     duration: 0.6,
-                    stagger: -0.15, // Reverse order
+                    stagger: -0.15,
                     ease: "power2.out",
                 }, "-=0.4")
 
-                // 4. Name - "and then the name"
+                // 4. Name
                 .from(nameRef.current, {
                     x: -30,
                     opacity: 0,
                     duration: 0.8,
                     ease: "power3.out",
-                }, "-=0.2") // Overlap with last link (Skills)
+                }, "-=0.2")
 
-                // 5. Fullstack Developer - "after that the fullstack developer"
+                // 5. Fullstack Developer
                 .from(subtitleRef.current, {
                     y: 10,
                     opacity: 0,
@@ -119,7 +131,7 @@ export const Header = () => {
     return (
         <header
             ref={headerRef}
-            className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 md:px-8"
+            className={`fixed top-6 left-0 right-0 z-50 flex justify-center px-4 md:px-8 transition-transform duration-300 ease-in-out ${isVisible ? "translate-y-0" : "-translate-y-[200%]"}`}
         >
             <div
                 ref={containerRef}
