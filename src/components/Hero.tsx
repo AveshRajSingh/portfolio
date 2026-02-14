@@ -64,7 +64,7 @@ export const Hero = () => {
     const wrapperRef = useRef<HTMLDivElement>(null); // Wrapper for pinning
 
     // We need refs for the animated elements in BOTH layers to sync them or animate a wrapper
-    const blurLayerRef = useRef<HTMLDivElement>(null);
+
     const clearLayerRef = useRef<HTMLDivElement>(null);
     const staticContentRef = useRef<HTMLDivElement>(null);
     const projectLayerRef = useRef<HTMLDivElement>(null);
@@ -149,22 +149,22 @@ export const Hero = () => {
                         yPercent: -150,
                         stagger: 0.2, // Distinct "letter by letter"
                         ease: "power2.inOut",
-                        duration: 2.5,
+                        duration: 2,
                     }, 0)
                     .to(allSinghChars, {
                         yPercent: 150,
                         stagger: 0.2,
                         ease: "power2.inOut",
-                        duration: 2.5
+                        duration: 2
                     }, 0)
-                    .to(roleElements, { yPercent: -500, opacity: 0, duration: 2.5 }, 0)
-                    .to(bioElements, { yPercent: 500, opacity: 0, duration: 2.5 }, 0)
+                    .to(roleElements, { yPercent: -500, opacity: 0, duration: 2 }, 0)
+                    .to(bioElements, { yPercent: 500, opacity: 0, duration: 2 }, 0)
 
                     // PHASE 2: PROJECTS TRAVERSE (Starts almost immediately)
                     .fromTo(projectLayerRef.current,
                         { x: "-100vw" },
                         {
-                            x: "200vw",
+                            x: "150vw",
                             ease: "none",
                             duration: 10, // Takes up whole timeline
                         },
@@ -199,48 +199,6 @@ export const Hero = () => {
         return () => ctx.revert();
     }, []);
 
-    // Mouse Move for Lens Effect
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!clearLayerRef.current) return;
-
-        const { clientX, clientY, currentTarget } = e;
-        const rect = currentTarget.getBoundingClientRect();
-
-        // Calculate relative coordinates
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-
-        // Update CSS Variables on the clear layer for the mask
-        gsap.set(clearLayerRef.current, {
-            "--x": `${x}px`,
-            "--y": `${y}px`,
-        });
-
-        // Parallax Effect
-        if (blurContentRef.current && clearContentRef.current && staticContentRef.current && bgRef.current) {
-            const xPos = (x / rect.width - 0.5) * 20;
-            const yPos = (y / rect.height - 0.5) * 20;
-
-            // Move all content layers together
-            gsap.to([blurContentRef.current, clearContentRef.current, staticContentRef.current], {
-                x: -xPos,
-                y: -yPos,
-                duration: 0.5,
-                ease: "power1.out",
-                overwrite: "auto"
-            });
-
-            // Background parallax
-            gsap.to(bgRef.current, {
-                x: xPos * 0.5,
-                y: yPos * 0.5,
-                duration: 0.5,
-                ease: "power1.out",
-                overwrite: "auto"
-            });
-        }
-    };
-
     // Shared Content Component
     const HeroContent = ({ showNames, showExtras, textColor = "text-white" }: { showNames: boolean, showExtras: boolean, textColor?: string }) => (
         // Removed h-[60vh] and justify-between to collapse the gap.
@@ -263,9 +221,6 @@ export const Hero = () => {
                     <SplitText>AVESHRAJ</SplitText>
                 </h1>
             </div>
-
-            {/* Removed Spacer */}
-
             {/* Bottom Section */}
             <div className="flex flex-col items-center">
                 {/* 3. SINGH */}
@@ -290,7 +245,6 @@ export const Hero = () => {
         <div ref={wrapperRef} className="relative w-full h-screen bg-neutral-950"> {/* Wrapper for ScrollTrigger Pinning */}
             <div
                 ref={containerRef}
-                onMouseMove={handleMouseMove}
                 className="relative h-full w-full overflow-hidden bg-neutral-950 text-white selection:bg-blue-500/30 flex items-center justify-center"
             >
                 {/* Background Layer */}
@@ -326,27 +280,11 @@ export const Hero = () => {
 
                 {/* LAYER 1: BASE NAMES (White - Visible by default) - z-10 */}
                 <div
-                    ref={blurLayerRef}
                     className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                     style={{ opacity: 1 }}
                 >
-                    <div ref={blurContentRef}>
+                    <div>
                         <HeroContent showNames={true} showExtras={false} textColor="text-white" />
-                    </div>
-                </div>
-
-                {/* LAYER 2: COLORED NAMES (Interactive Lens) - z-20 */}
-                <div
-                    ref={clearLayerRef}
-                    className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
-                    style={{
-                        opacity: 1,
-                        maskImage: "radial-gradient(circle 100px at var(--x, 50%) var(--y, 50%), black 0%, black 98%, transparent 100%)",
-                        WebkitMaskImage: "radial-gradient(circle 100px at var(--x, 50%) var(--y, 50%), black 0%, black 98%, transparent 100%)",
-                    }}
-                >
-                    <div ref={clearContentRef}>
-                        <HeroContent showNames={true} showExtras={false} textColor="text-blue-500" />
                     </div>
                 </div>
 
@@ -354,7 +292,7 @@ export const Hero = () => {
                 <div
                     className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none"
                 >
-                    <div ref={staticContentRef}>
+                    <div>
                         <HeroContent showNames={false} showExtras={true} />
                     </div>
                 </div>
