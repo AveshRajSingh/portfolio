@@ -9,7 +9,8 @@ import { ArrowUpRight, Code, Layers, Briefcase, MessageCircle } from "lucide-rea
 
 export const Header = () => {
     const { scrollY } = useScroll();
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const lastScrollY = useRef(0);
 
     // Desktop Refs
     const headerRef = useRef<HTMLElement>(null);
@@ -26,7 +27,21 @@ export const Header = () => {
     const mobileIndicatorRef = useRef<HTMLDivElement>(null);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        setIsScrolled(latest > 50);
+        const previous = lastScrollY.current;
+        const diff = latest - previous;
+        const isScrollingDown = diff > 0;
+        const isScrollingUp = diff < 0;
+
+        // Hide if scrolling down and past 50px
+        if (isScrollingDown && latest > 50) {
+            setIsVisible(false);
+        }
+        // Show if scrolling up or at the top
+        else if (isScrollingUp || latest < 50) {
+            setIsVisible(true);
+        }
+
+        lastScrollY.current = latest;
     });
 
     // GSAP Entrance Animation
@@ -74,17 +89,14 @@ export const Header = () => {
                 }, "-=0.4");
 
             // --- Mobile Bottom Dock Animation ---
-            // Slide up from bottom
             if (mobileDockRef.current) {
-                // We want this to happen roughly with the top bar or slightly after
                 tl.from(mobileDockRef.current, {
                     yPercent: 150,
                     opacity: 0,
                     duration: 1,
                     ease: "power4.out"
-                }, 0.5); // Start at absolute time 0.5s
+                }, 0.5);
 
-                // Stagger icons?
                 tl.from(".mobile-nav-item", {
                     y: 20,
                     opacity: 0,
@@ -102,7 +114,6 @@ export const Header = () => {
     // Desktop Hover Logic
     const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (!indicatorRef.current || !e.currentTarget || !linksContainerRef.current) return;
-
         moveIndicator(e.currentTarget, indicatorRef.current, linksContainerRef.current);
     };
 
@@ -154,7 +165,7 @@ export const Header = () => {
     return (
         <header ref={headerRef}>
             {/* Top Navbar (Logo + Desktop Nav) */}
-            <div className={`fixed top-6 left-0 right-0 z-50 flex justify-center px-4 md:px-8 transition-transform duration-300 ease-in-out ${isScrolled ? "-translate-y-[200%]" : "translate-y-0"}`}>
+            <div className={`fixed top-6 left-0 right-0 z-[100] flex justify-center px-4 md:px-8 transition-transform duration-300 ease-in-out ${isVisible ? "translate-y-0" : "-translate-y-[200%]"}`}>
                 <div
                     ref={containerRef}
                     className={cn(
@@ -163,7 +174,7 @@ export const Header = () => {
                     )}
                     style={{ maxWidth: "1280px", width: "100%" }}
                 >
-                    {/* 1. Logo Section - Centered on Mobile, Left on Desktop */}
+                    {/* 1. Logo Section */}
                     <div ref={logoRef} className="flex-1 flex justify-center md:justify-start">
                         <Link href="/" className="group flex flex-col items-center md:items-start justify-center w-fit">
                             <span ref={nameRef} className="text-xl md:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white leading-none">
@@ -175,7 +186,7 @@ export const Header = () => {
                         </Link>
                     </div>
 
-                    {/* 2. Center Links Section (Desktop Only) */}
+                    {/* 2. Center Links Section */}
                     <nav
                         ref={linksContainerRef}
                         className="hidden md:flex items-center relative flex-1 justify-center"
@@ -197,7 +208,7 @@ export const Header = () => {
                         ))}
                     </nav>
 
-                    {/* 3. CTA Button (Desktop Only) */}
+                    {/* 3. CTA Button */}
                     <div ref={ctaRef} className="hidden md:flex flex-1 justify-end">
                         <motion.a
                             href="mailto:contact@example.com"
@@ -218,7 +229,7 @@ export const Header = () => {
             {/* Bottom Mobile Dock */}
             <div
                 ref={mobileDockRef}
-                className={`fixed bottom-6 left-4 right-4 z-50 flex md:hidden justify-center transition-transform duration-300 ease-in-out ${isScrolled ? "translate-y-[200%]" : "translate-y-0"}`}
+                className={`fixed bottom-6 left-4 right-4 z-50 flex md:hidden justify-center transition-transform duration-300 ease-in-out ${isVisible ? "translate-y-0" : "translate-y-[200%]"}`}
             >
                 <nav
                     className={cn(
@@ -227,23 +238,18 @@ export const Header = () => {
                     )}
                     onMouseLeave={handleMobileLeave}
                 >
-                    {/* Shared Background Indicator (Mobile) */}
                     <div
                         ref={mobileIndicatorRef}
                         className="absolute top-2 bottom-2 left-0 bg-neutral-200/80 dark:bg-white/10 rounded-2xl opacity-0 pointer-events-none"
                     />
 
-                    {/* Nav Items */}
                     {[...navLinks, { name: "Talk", href: "mailto:contact@example.com", icon: MessageCircle }].map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
                             className="mobile-nav-item relative z-10 flex flex-col items-center justify-center w-full py-2 gap-1 text-neutral-600 dark:text-neutral-400 active:text-blue-500 transition-colors"
-                            // Use onClick/Touch for mobile? Hover works for hybrid, but active state is key.
                             onMouseEnter={handleMobileEnter}
                             onTouchStart={(e) => {
-                                // Simulate hover for touch
-                                // Need to cast to unknown then anchor to make TS happy or just use currentTarget
                                 const target = e.currentTarget as unknown as HTMLAnchorElement;
                                 if (mobileIndicatorRef.current && mobileDockRef.current) {
                                     moveIndicator(target, mobileIndicatorRef.current, mobileDockRef.current);
@@ -251,10 +257,6 @@ export const Header = () => {
                             }}
                         >
                             <link.icon className="w-5 h-5" />
-                            {/* Optional: Show label like standard bottom nav? Or just icons?
-                                User said "add icon for skill project and expirence and let's talk". 
-                                Usually bottom nav has labels for clarity. Let's add tiny labels.
-                            */}
                             <span className="text-[10px] font-medium">{link.name}</span>
                         </Link>
                     ))}
