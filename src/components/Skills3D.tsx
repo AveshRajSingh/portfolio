@@ -238,7 +238,102 @@ const CentralSun = ({ label, color }: { label: string, color: string }) => {
 };
 
 
-const Scene = ({ activeIndex, scrollProgress }: { activeIndex: number, scrollProgress: number }) => {
+// --- Joystick Component ---
+const Joystick = ({ onChange }: { onChange: (data: { x: number, y: number }) => void }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const knobRef = useRef<HTMLDivElement>(null);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [active, setActive] = useState(false);
+
+    const handleStart = (e: React.TouchEvent | React.MouseEvent) => {
+        setActive(true);
+        handleMove(e);
+    };
+
+    const handleMove = (e: React.TouchEvent | React.MouseEvent) => {
+        if (!active && e.type !== 'touchstart' && e.type !== 'mousedown') return;
+        if (!containerRef.current) return;
+
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const centerX = containerRect.left + containerRect.width / 2;
+        const centerY = containerRect.top + containerRect.height / 2;
+
+        let clientX, clientY;
+        if ('touches' in e) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = (e as React.MouseEvent).clientX;
+            clientY = (e as React.MouseEvent).clientY;
+        }
+
+        const deltaX = clientX - centerX;
+        const deltaY = clientY - centerY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const maxRadius = containerRect.width / 2;
+
+        let x = deltaX;
+        let y = deltaY;
+
+        if (distance > maxRadius) {
+            const angle = Math.atan2(deltaY, deltaX);
+            x = Math.cos(angle) * maxRadius;
+            y = Math.sin(angle) * maxRadius;
+        }
+
+        setPosition({ x, y });
+
+        // Normalize output (-1 to 1)
+        onChange({ x: x / maxRadius, y: y / maxRadius });
+    };
+
+    const handleEnd = () => {
+        setActive(false);
+        setPosition({ x: 0, y: 0 });
+        onChange({ x: 0, y: 0 });
+    };
+
+    useEffect(() => {
+        if (active) {
+            window.addEventListener('mouseup', handleEnd);
+            window.addEventListener('touchend', handleEnd);
+            // window.addEventListener('mousemove', handleMove as any); // handled by container for tighter control? No, window is better for dragging out
+            // Actually for a simple joystick, binding to container is safer for scrolling page if user slips off?
+            // But we want to drag outside too?
+            // Let's stick to container events for simplicity and to allow page scroll if they miss it.
+        }
+        return () => {
+            window.removeEventListener('mouseup', handleEnd);
+            window.removeEventListener('touchend', handleEnd);
+        }
+    }, [active]);
+
+
+    return (
+        <div
+            ref={containerRef}
+            className="w-24 h-24 rounded-full bg-neutral-800/80 border border-white/20 backdrop-blur-md relative touch-none flex items-center justify-center shadow-lg"
+            onTouchStart={handleStart}
+            onTouchMove={handleMove}
+            onTouchEnd={handleEnd}
+            onMouseDown={handleStart}
+            onMouseMove={handleMove}
+            onMouseUp={handleEnd}
+        >
+            <div
+                ref={knobRef}
+                className="w-10 h-10 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] absolute transition-transform duration-75"
+                style={{
+                    transform: `translate(${position.x}px, ${position.y}px)`,
+                    transition: active ? 'none' : 'transform 0.1s ease-out'
+                }}
+            />
+        </div>
+    );
+}
+
+
+const Scene = ({ activeIndex, scrollProgress, joystickRef }: { activeIndex: number, scrollProgress: number, joystickRef: React.MutableRefObject<{ x: number, y: number }> }) => {
     const [displayedIndex, setDisplayedIndex] = useState(activeIndex);
 
     // Timeline ref to handle interruptions
@@ -247,14 +342,34 @@ const Scene = ({ activeIndex, scrollProgress }: { activeIndex: number, scrollPro
     const { viewport, camera } = useThree();
     const isMobile = viewport.width < 7.68;
 
+    const systemGroupRef = useRef<THREE.Group>(null);
     const orbitGroupRef = useRef<THREE.Group>(null);
     const nodeRefs = useRef<(THREE.Group | null)[]>([]);
 
     // Rotation of the entire system
     useFrame((state, delta) => {
+        // 1. Constant Orbit (Skills orbiting the center)
         if (orbitGroupRef.current) {
-            // Constant slow orbit rotation
             orbitGroupRef.current.rotation.y += delta * 0.2;
+        }
+
+        // 2. System Orientation (Joystick Control or Reset)
+        if (systemGroupRef.current) {
+            if (isMobile && joystickRef.current) {
+                // Joystick controls the WHOLE system orientation
+                // X -> Y rotation (Yaw)
+                systemGroupRef.current.rotation.y += joystickRef.current.x * delta * 6;
+                // Y -> X rotation (Pitch)
+                systemGroupRef.current.rotation.x += joystickRef.current.y * delta * 6;
+
+                // Clamp X rotation to avoid flipping
+                systemGroupRef.current.rotation.x = THREE.MathUtils.clamp(systemGroupRef.current.rotation.x, -0.5, 0.5);
+            } else if (!isMobile) {
+                // On Desktop, reset tilt to 0 to ensure perfect alignment with default view
+                // We Lerp for smoothness in case of resizing window
+                systemGroupRef.current.rotation.x = THREE.MathUtils.lerp(systemGroupRef.current.rotation.x, 0, delta * 5);
+                systemGroupRef.current.rotation.z = THREE.MathUtils.lerp(systemGroupRef.current.rotation.z, 0, delta * 5);
+            }
         }
     });
 
@@ -385,18 +500,21 @@ const Scene = ({ activeIndex, scrollProgress }: { activeIndex: number, scrollPro
             <pointLight position={[10, 10, 10]} intensity={1.5} />
             <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={0.5} />
 
-            {/* Added OrbitControls for interaction */}
-            <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                enableDamping
-                dampingFactor={0.05}
-                rotateSpeed={0.5}
-            />
+            {/* Added OrbitControls for interaction, disabled on Mobile when using Joystick */}
+            {!isMobile && (
+                <OrbitControls
+                    enableZoom={false}
+                    enablePan={false}
+                    enableDamping
+                    dampingFactor={0.05}
+                    rotateSpeed={0.5}
+                />
+            )}
 
             {/* Main Solar System Group */}
             {/* Rotation set to 0, camera handles view angle */}
             <group
+                ref={systemGroupRef}
                 rotation={[0, 0, 0]}
                 position={[0, 0, 0]}
             >
@@ -439,6 +557,9 @@ export function Skills3D() {
     const triggerRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const [scrollProgress, setScrollProgress] = useState(0);
+
+    // Joystick State Ref
+    const joystickRef = useRef({ x: 0, y: 0 });
 
     // Initialize GSAP ScrollTrigger
     useLayoutEffect(() => {
@@ -510,21 +631,7 @@ export function Skills3D() {
             </div>
 
             {/* FULL: 3D Canvas */}
-            <div className="w-full md:w-[65%] h-full relative touch-pan-y">
-                {/* Canvas Overlay Lines */}
-                <div className="absolute inset-0 pointer-events-none z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
 
-                {/* 
-                   Canvas needs to be able to capture pointer events for OrbitControls. 
-                   Ensure z-index is correct relative to overlay. 
-                   Overlay has z-10, pointer-events-none.
-                   Mobile Nav has z-50.
-                   So Canvas (default z-0) should be interactable.
-                */}
-                <Canvas camera={{ position: [0, 0, 16], fov: 45 }}>
-                    <Scene activeIndex={activeIndex} scrollProgress={scrollProgress} />
-                </Canvas>
-            </div>
 
             {/* BOTTOM: Mobile Navigation Bar */}
             <div className="md:hidden absolute bottom-24 left-1/2 -translate-x-1/2 z-50 flex gap-4 p-3 rounded-2xl bg-neutral-900/80 backdrop-blur-xl border border-white/10 shadow-2xl">
@@ -546,6 +653,26 @@ export function Skills3D() {
                         </button>
                     );
                 })}
+            </div>
+            <div className="w-full md:w-[65%] h-full relative touch-pan-y">
+                {/* Canvas Overlay Lines */}
+                <div className="absolute inset-0 pointer-events-none z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+
+                {/* 
+                   Canvas needs to be able to capture pointer events for OrbitControls. 
+                   Ensure z-index is correct relative to overlay. 
+                   Overlay has z-10, pointer-events-none.
+                   Mobile Nav has z-50.
+                   So Canvas (default z-0) should be interactable.
+                */}
+                <Canvas camera={{ position: [0, 0, 16], fov: 45 }}>
+                    <Scene activeIndex={activeIndex} scrollProgress={scrollProgress} joystickRef={joystickRef} />
+                </Canvas>
+
+                {/* Mobile Joystick (Visible only on Mobile) */}
+                <div className="mt-10 absolute bottom-[1px] left-1/2 -translate-x-1/2 z-40 md:hidden">
+                    <Joystick onChange={(data) => { joystickRef.current = data; }} />
+                </div>
             </div>
         </section>
     );
