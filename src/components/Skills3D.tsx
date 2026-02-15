@@ -670,7 +670,7 @@ export function Skills3D() {
                 </Canvas>
 
                 {/* Mobile Joystick (Visible only on Mobile) */}
-                <div className="mt-10 absolute bottom-[1px] left-1/2 -translate-x-1/2 z-40 md:hidden">
+                <div className="absolute bottom-[1px] left-1/2 -translate-x-1/2 z-40 md:hidden">
                     <Joystick onChange={(data) => { joystickRef.current = data; }} />
                 </div>
             </div>
