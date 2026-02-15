@@ -68,11 +68,11 @@ export const Footer = () => {
                         <div className={`flex flex-col items-center gap-2 text-sm ${isExperiencePage ? "text-green-500/70" : "text-neutral-400"}`}>
                             <a href="mailto:contact@avesh.dev" className={`flex items-center gap-2 transition-colors ${isExperiencePage ? "hover:text-green-400" : "hover:text-white"}`}>
                                 <Mail className="w-4 h-4" />
-                                <span>contact@avesh.dev</span>
+                                <span>aveshrajsingh3@gmail.com</span>
                             </a>
                             <a href="tel:+1234567890" className={`flex items-center gap-2 transition-colors ${isExperiencePage ? "hover:text-green-400" : "hover:text-white"}`}>
                                 <Phone className="w-4 h-4" />
-                                <span>+91 98765 43210</span>
+                                <span>+91 6205683736</span>
                             </a>
                         </div>
                     </div>
