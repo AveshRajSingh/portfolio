@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent, Variants } from "framer-motion";
 import gsap from "gsap";
 import { cn } from "@/utils/cn";
-import { ArrowUpRight, Code, Layers, Briefcase, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Code, Layers, Briefcase, MessageCircle, Home } from "lucide-react";
 
 export const Header = () => {
     const { scrollY } = useScroll();
@@ -157,9 +157,10 @@ export const Header = () => {
     };
 
     const navLinks = [
-        { name: "Skills", href: "#skills", icon: Code },
-        { name: "Projects", href: "#projects", icon: Layers },
-        { name: "Experience", href: "#experience", icon: Briefcase },
+        { name: "Home", href: "/", icon: Home },
+        { name: "Skills", href: "/#skills", icon: Code },
+        { name: "Projects", href: "/projects", icon: Layers },
+        { name: "Experience", href: "/#experience", icon: Briefcase },
     ];
 
     return (
@@ -174,8 +175,8 @@ export const Header = () => {
                     )}
                     style={{ maxWidth: "1280px", width: "100%" }}
                 >
-                    {/* 1. Logo Section */}
-                    <div ref={logoRef} className="flex-1 flex justify-center md:justify-start">
+                    {/* 1. Logo Section - Centered on Mobile, Left on Desktop */}
+                    <div ref={logoRef} className="flex-1 flex justify-center md:justify-start items-center gap-4">
                         <Link href="/" className="group flex flex-col items-center md:items-start justify-center w-fit">
                             <span ref={nameRef} className="text-xl md:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white leading-none">
                                 Avesh Raj Singh
@@ -184,9 +185,18 @@ export const Header = () => {
                                 Fullstack Developer
                             </span>
                         </Link>
+
+                        {/* Mobile Top Bar Home Icon */}
+                        <Link
+                            href="/"
+                            className="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-blue-500 transition-colors"
+                            aria-label="Home"
+                        >
+                            <Home className="w-4 h-4" />
+                        </Link>
                     </div>
 
-                    {/* 2. Center Links Section */}
+                    {/* 2. Center Links Section (Desktop Only) */}
                     <nav
                         ref={linksContainerRef}
                         className="hidden md:flex items-center relative flex-1 justify-center"
@@ -208,7 +218,7 @@ export const Header = () => {
                         ))}
                     </nav>
 
-                    {/* 3. CTA Button */}
+                    {/* 3. CTA Button (Desktop Only) */}
                     <div ref={ctaRef} className="hidden md:flex flex-1 justify-end">
                         <motion.a
                             href="mailto:contact@example.com"
@@ -238,18 +248,23 @@ export const Header = () => {
                     )}
                     onMouseLeave={handleMobileLeave}
                 >
+                    {/* Shared Background Indicator (Mobile) */}
                     <div
                         ref={mobileIndicatorRef}
                         className="absolute top-2 bottom-2 left-0 bg-neutral-200/80 dark:bg-white/10 rounded-2xl opacity-0 pointer-events-none"
                     />
 
+                    {/* Nav Items */}
                     {[...navLinks, { name: "Talk", href: "mailto:contact@example.com", icon: MessageCircle }].map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
                             className="mobile-nav-item relative z-10 flex flex-col items-center justify-center w-full py-2 gap-1 text-neutral-600 dark:text-neutral-400 active:text-blue-500 transition-colors"
+                            // Use onClick/Touch for mobile? Hover works for hybrid, but active state is key.
                             onMouseEnter={handleMobileEnter}
                             onTouchStart={(e) => {
+                                // Simulate hover for touch
+                                // Need to cast to unknown then anchor to make TS happy or just use currentTarget
                                 const target = e.currentTarget as unknown as HTMLAnchorElement;
                                 if (mobileIndicatorRef.current && mobileDockRef.current) {
                                     moveIndicator(target, mobileIndicatorRef.current, mobileDockRef.current);
@@ -257,6 +272,10 @@ export const Header = () => {
                             }}
                         >
                             <link.icon className="w-5 h-5" />
+                            {/* Optional: Show label like standard bottom nav? Or just icons?
+                                User said "add icon for skill project and expirence and let's talk". 
+                                Usually bottom nav has labels for clarity. Let's add tiny labels.
+                            */}
                             <span className="text-[10px] font-medium">{link.name}</span>
                         </Link>
                     ))}

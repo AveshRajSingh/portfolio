@@ -74,7 +74,7 @@ export const Hero = () => {
     // const clearContentRef = useRef<HTMLDivElement>(null); // Unused
 
     React.useLayoutEffect(() => {
-        let mm = gsap.matchMedia();
+        const mm = gsap.matchMedia();
 
         mm.add("(min-width: 768px)", () => {
             // --- DESKTOP ANIMATION ---
