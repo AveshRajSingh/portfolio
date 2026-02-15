@@ -5,16 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, Download, Cpu, Server, Database, Globe } from "lucide-react";
 
 const leftLogs = [
-    "[sys] core_logic.so loaded: DSA, OS, DBMS, Networks",
-    "[sys] terraform plan: 0 to add, 0 to change, 0 to destroy.",
-    "[sys] aws_ec2_instance.career: status = 'pending_hire'",
-    "[sys] ansible-playbook: setup_professional_growth.yml ... [OK]",
+    "[sys] loading_core: Fullstack_Engine (Next.js, Node.js) [OK]",
+    "[sys] dsa_modules: Sorting, Graphs, Dynamic_Programming [LOADED]",
+    "[sys] networking: TCP/IP stack & DNS resolution configured",
+    "[sys] terraform_plan: Infrastructure-as-Code ready for deploy",
+    "[sys] aws_resources: Lambda, S3, EC2, VPC status = 'IDLE'",
 ];
 
 const rightHooks = [
-    "// TODO: Replace 'Fresher' with 'Lead Dev' once hired.",
-    "// NOTE: This dev is highly scalable.",
-    "\"local build stable; need prod env.\"",
+    "// NOTE: I build the app and the server it runs on.",
+    "// STATUS: Fullstack logic stable. DevOps pipelines active.",
+    "// TODO: Transition from 'Localhost' to 'Production_Company'.",
+    "\"Every senior architect started with a 404. Let's initialize my career.sh.\"",
 ];
 
 // Helper for typing text line by line

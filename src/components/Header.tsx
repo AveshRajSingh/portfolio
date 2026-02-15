@@ -245,15 +245,6 @@ export const Header = () => {
                                 Fullstack Developer
                             </span>
                         </Link>
-
-                        {/* Mobile Top Bar Home Icon */}
-                        <Link
-                            href="/"
-                            className="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-blue-500 transition-colors"
-                            aria-label="Home"
-                        >
-                            <Home className="w-4 h-4" />
-                        </Link>
                     </div>
 
                     {/* 2. Center Links Section (Desktop Only) */}
@@ -318,7 +309,7 @@ export const Header = () => {
                     />
 
                     {/* Nav Items */}
-                    {[...navLinks, { name: "Talk", href: "mailto:contact@example.com", icon: MessageCircle }].map((link) => (
+                    {[...navLinks, { name: "Talk", href: "mailto:aveshrajsingh3@gmail.com", icon: MessageCircle }].map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
