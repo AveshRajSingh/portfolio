@@ -2,13 +2,16 @@
 
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import Link from "next/link";
-import { motion, useScroll, useMotionValueEvent, Variants } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { motion, useScroll, useMotionValueEvent, Variants, useMotionValue, useSpring } from "framer-motion";
 import gsap from "gsap";
 import { cn } from "@/utils/cn";
 import { ArrowUpRight, Code, Layers, Briefcase, MessageCircle, Home } from "lucide-react";
 
 export const Header = () => {
     const { scrollY } = useScroll();
+    const pathname = usePathname();
+    const isExperiencePage = pathname === "/experience";
     const [isVisible, setIsVisible] = useState(true);
     const lastScrollY = useRef(0);
 
@@ -111,16 +114,33 @@ export const Header = () => {
         return () => ctx.revert();
     }, []);
 
-    // Magnetic Button Logic
+    // Magnetic Button Logic (Framer Motion)
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    const springConfig = { damping: 15, stiffness: 150, mass: 0.1 };
+    const springX = useSpring(mouseX, springConfig);
+    const springY = useSpring(mouseY, springConfig);
+
     useEffect(() => {
-        if (!ctaRef.current) return;
-
-        const button = ctaRef.current;
-        const xTo = gsap.quickTo(button, "x", { duration: 0.5, ease: "power3.out" });
-        const yTo = gsap.quickTo(button, "y", { duration: 0.5, ease: "power3.out" });
-
         const handleMouseMove = (e: MouseEvent) => {
-            const rect = button.getBoundingClientRect();
+            if (!ctaRef.current) return;
+
+            // Target the actual button inside the container if needed, or just the container
+            // The ctaRef is on the div wrapper, but the motion.a is the button.
+            // Let's attach a ref to the motion.a directly or use the wrapper for measurements.
+            // Looking at the JSX, ctaRef is the wrapper. Let's use that for positioning but animate the button?
+            // Actually, currently ctaRef is on the div wrapper lines 268.
+            // And the motion.a is inside it.
+            // We want to move the button.
+            // Let's verify if we can animate the wrapper or if we need to animate the button.
+            // The existing GSAP code animated `ctaRef.current`.
+            // So we should animate the same element or pass styles to motion.a.
+
+            const element = ctaRef.current;
+            if (!element) return;
+
+            const rect = element.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
 
@@ -128,34 +148,26 @@ export const Header = () => {
             const distanceY = e.clientY - centerY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            // Logic: 
-            // 1. "Follow from a certain distance" -> range ~150px
-            // 2. "Should stop moving... if getting closer" -> Inner stability zone
-
-            // Outer range triggering movement
+            // Logic:
+            // "Dead Zone": < 60px -> snap to center
+            // "Magnetic Zone": < 150px -> follow cursor
             if (distance < 150) {
-                // Inner "Stability/Clickable" zone
-                // If we are very close (hovering or about to), reduce movement significantly
                 if (distance < 60) {
-                    xTo(0);
-                    yTo(0);
+                    mouseX.set(0);
+                    mouseY.set(0);
                 } else {
-                    // "Following" zone (60px - 150px)
-                    // Move towards cursor slightly (magnetic pull)
-                    // Factor 0.3 means it moves 30% of the distance towards mouse
-                    xTo(distanceX * 0.3);
-                    yTo(distanceY * 0.3);
+                    mouseX.set(distanceX * 0.2); // Reduced factor for smoother feel
+                    mouseY.set(distanceY * 0.2);
                 }
             } else {
-                // Out of range - Snap back
-                xTo(0);
-                yTo(0);
+                mouseX.set(0);
+                mouseY.set(0);
             }
         };
 
         window.addEventListener("mousemove", handleMouseMove);
         return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
+    }, [mouseX, mouseY]);
 
     // Desktop Hover Logic
     const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -206,7 +218,7 @@ export const Header = () => {
         { name: "Home", href: "/", icon: Home },
         { name: "Skills", href: "/#skills", icon: Code },
         { name: "Projects", href: "/projects", icon: Layers },
-        { name: "Experience", href: "/#experience", icon: Briefcase },
+        { name: "Experience", href: "/experience", icon: Briefcase },
     ];
 
     return (
@@ -216,8 +228,10 @@ export const Header = () => {
                 <div
                     ref={containerRef}
                     className={cn(
-                        "flex items-center justify-between px-6 py-3 rounded-4xl shadow-2xl overflow-hidden",
-                        "bg-white/80 dark:bg-neutral-900/90 backdrop-blur-2xl border border-neutral-200/50 dark:border-white/10"
+                        "flex items-center justify-between px-6 py-3 rounded-4xl shadow-2xl overflow-hidden transition-colors duration-300",
+                        isExperiencePage
+                            ? "bg-black/90 border border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.1)] backdrop-blur-md"
+                            : "bg-white/80 dark:bg-neutral-900/90 backdrop-blur-2xl border border-neutral-200/50 dark:border-white/10"
                     )}
                     style={{ maxWidth: "1280px", width: "100%" }}
                 >
@@ -268,6 +282,7 @@ export const Header = () => {
                     <div ref={ctaRef} className="hidden md:flex flex-1 justify-end">
                         <motion.a
                             href="mailto:contact@example.com"
+                            style={{ x: springX, y: springY }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className="relative flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-semibold text-sm overflow-hidden group shadow-lg shadow-blue-500/20"
@@ -289,8 +304,10 @@ export const Header = () => {
             >
                 <nav
                     className={cn(
-                        "flex items-center justify-between w-full max-w-sm px-2 py-2 rounded-3xl shadow-2xl relative",
-                        "bg-white/90 dark:bg-neutral-900/90 backdrop-blur-2xl border border-neutral-200/50 dark:border-white/10"
+                        "flex items-center justify-between w-full max-w-sm px-2 py-2 rounded-3xl shadow-2xl relative transition-colors duration-300",
+                        isExperiencePage
+                            ? "bg-black/90 border border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.1)] backdrop-blur-md"
+                            : "bg-white/90 dark:bg-neutral-900/90 backdrop-blur-2xl border border-neutral-200/50 dark:border-white/10"
                     )}
                     onMouseLeave={handleMobileLeave}
                 >
