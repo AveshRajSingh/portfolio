@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent, Variants } from "framer-motion";
 import gsap from "gsap";
@@ -109,6 +109,52 @@ export const Header = () => {
         }, headerRef);
 
         return () => ctx.revert();
+    }, []);
+
+    // Magnetic Button Logic
+    useEffect(() => {
+        if (!ctaRef.current) return;
+
+        const button = ctaRef.current;
+        const xTo = gsap.quickTo(button, "x", { duration: 0.5, ease: "power3.out" });
+        const yTo = gsap.quickTo(button, "y", { duration: 0.5, ease: "power3.out" });
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = button.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const distanceX = e.clientX - centerX;
+            const distanceY = e.clientY - centerY;
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+            // Logic: 
+            // 1. "Follow from a certain distance" -> range ~150px
+            // 2. "Should stop moving... if getting closer" -> Inner stability zone
+
+            // Outer range triggering movement
+            if (distance < 150) {
+                // Inner "Stability/Clickable" zone
+                // If we are very close (hovering or about to), reduce movement significantly
+                if (distance < 60) {
+                    xTo(0);
+                    yTo(0);
+                } else {
+                    // "Following" zone (60px - 150px)
+                    // Move towards cursor slightly (magnetic pull)
+                    // Factor 0.3 means it moves 30% of the distance towards mouse
+                    xTo(distanceX * 0.3);
+                    yTo(distanceY * 0.3);
+                }
+            } else {
+                // Out of range - Snap back
+                xTo(0);
+                yTo(0);
+            }
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
     // Desktop Hover Logic
