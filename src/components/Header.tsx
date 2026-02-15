@@ -221,6 +221,15 @@ export const Header = () => {
         { name: "Experience", href: "/experience", icon: Briefcase },
     ];
 
+    // Custom Scroll Handler
+    const handleScrollToContact = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const contactSection = document.getElementById("contact");
+        if (contactSection) {
+            contactSection.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <header ref={headerRef}>
             {/* Top Navbar (Logo + Desktop Nav) */}
@@ -272,11 +281,12 @@ export const Header = () => {
                     {/* 3. CTA Button (Desktop Only) */}
                     <div ref={ctaRef} className="hidden md:flex flex-1 justify-end">
                         <motion.a
-                            href="mailto:contact@example.com"
+                            href="#contact"
+                            onClick={handleScrollToContact}
                             style={{ x: springX, y: springY }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="relative flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-semibold text-sm overflow-hidden group shadow-lg shadow-blue-500/20"
+                            className="relative flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-semibold text-sm overflow-hidden group shadow-lg shadow-blue-500/20 cursor-pointer"
                         >
                             <span className="relative z-10 flex items-center gap-2">
                                 Let's Talk
@@ -309,10 +319,13 @@ export const Header = () => {
                     />
 
                     {/* Nav Items */}
-                    {[...navLinks, { name: "Talk", href: "mailto:aveshrajsingh3@gmail.com", icon: MessageCircle }].map((link) => (
+                    {[...navLinks, { name: "Talk", href: "#contact", icon: MessageCircle }].map((link) => (
                         <Link
                             key={link.name}
                             href={link.href}
+                            onClick={(e) => {
+                                if (link.href === "#contact") handleScrollToContact(e);
+                            }}
                             className="mobile-nav-item relative z-10 flex flex-col items-center justify-center w-full py-2 gap-1 text-neutral-600 dark:text-neutral-400 active:text-blue-500 transition-colors"
                             // Use onClick/Touch for mobile? Hover works for hybrid, but active state is key.
                             onMouseEnter={handleMobileEnter}

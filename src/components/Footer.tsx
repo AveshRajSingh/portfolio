@@ -41,7 +41,7 @@ export const Footer = () => {
             <div className="container mx-auto px-4 md:px-6">
 
                 {/* --- Section 1: Contact Form (Full Width / Centered) --- */}
-                <div className="max-w-3xl mx-auto mb-20">
+                <div id="contact" className="max-w-3xl mx-auto mb-20 scroll-mt-24">
                     <div className="text-center mb-10">
                         <h2 className={`text-3xl md:text-4xl font-bold tracking-tight mb-4 ${isExperiencePage ? "text-green-500" : "text-white"}`}>
                             Let's work together
