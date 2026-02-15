@@ -8,24 +8,24 @@ const projects = [
     {
         id: "ambria",
         title: "Ambria",
-        description: "A comprehensive e-commerce platform built for a high-end fashion brand, featuring real-time inventory management and a seamless checkout experience.",
-        technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "Stripe"],
+        description: "AI companion featuring Generative UI for interactive repository management and a human-in-the-loop system for secure GitHub operations.",
+        technologies: ["Next.js", "TypeScript", "Tambo SDK", "Supabase", "OKTOKIT"],
         features: [
-            "Real-time inventory synchronization",
-            "Secure Stripe payment processing",
-            "Admin dashboard for order management",
+            "Generative UI for interactive repository management",
+            "Human-in-the-loop system for secure GitHub operations",
+            "Secure GitHub operations",
             "Responsive minimalist design"
         ],
         links: {
-            demo: "#", // Placeholder
-            github: "#", // Placeholder
+            demo: "https://ambria.vercel.app/", // Placeholder
+            github: "https://github.com/AveshRajSingh/ambria", // Placeholder
         },
         image: "/assets/ambria.jpeg",
     },
     {
         id: "sitcoders",
         title: "SITcoders",
-        description: "A collaborative coding platform designed for students to share resources, participate in hackathons, and build a community of developers.",
+        description: "Full-stack college platform with a multi-tier RBAC system, automated background cleanup, and atomic data management using MongoDB Transactions",
         technologies: ["React", "Node.js", "MongoDB", "Socket.io", "Express"],
         features: [
             "Real-time code collaboration",
@@ -34,8 +34,8 @@ const projects = [
             "Interactive student forums"
         ],
         links: {
-            demo: "#", // Placeholder
-            github: "#", // Placeholder
+            demo: "https://sitcoders.tech/", // Placeholder
+            github: "https://github.com/AveshRajSingh/SITcoders", // Placeholder
         },
         image: "/assets/sitcoders.jpeg",
     },
@@ -51,8 +51,8 @@ const projects = [
             "Competitive leaderboards"
         ],
         links: {
-            demo: "#", // Placeholder
-            github: "#", // Placeholder
+            demo: "https://type-dev-two.vercel.app/", // Placeholder
+            github: "https://github.com/AveshRajSingh/typeDev", // Placeholder
         },
         image: "/assets/typedev.png",
     },

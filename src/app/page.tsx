@@ -1,6 +1,4 @@
 import { Hero } from "@/components/Hero";
-
-import { ActivityHub } from "@/components/ActivityHub";
 import { Skills3D } from "@/components/Skills3D";
 
 
